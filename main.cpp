@@ -259,6 +259,67 @@ class Diode: public Element
     }
 };
 
+class Schematic
+{
+    private:
+    string name, address;
+
+    public:
+    static vector<Schematic*> schematics;
+    Schematic(string name, string address)
+    {
+        this->name = name;
+        this->address = address;
+        schematics.push_back(this);
+    }
+
+    static void showAll()
+    {
+        cout << "-choose existing schematic:" << endl;
+        for (int i = 0; i < schematics.size(); i++)
+        {
+            cout << i + 1 << '-' << schematics[i]->name << endl;
+        }
+
+        string input;
+        getline(cin, input);
+        smatch match;
+        bool valid = false;
+
+        while (!valid)
+        {
+            if (regex_match(input, match, regex("(\\s*)(return)(\\s*)")))
+            {
+                return;
+            }
+
+            if (regex_match(input, match, regex("(\\s*)(\\d+)(\\s*)")))
+            {
+                int index = stoi(match[2].str());
+                index--;
+                if (index >= 0 && index < schematics.size())
+                {
+                    valid = true;
+                    schematics[index]->show();
+                }
+            }
+            
+            if (!valid)
+            {
+                //throw InvalidInputException();
+                cout << "-Error : Inappropriate input" << endl;
+            }
+        }
+    }
+    
+    void show()
+    {
+        cout << name << ":\n";
+
+    }
+};
+vector<Schematic*> Schematic::schematics;
+
 void setGround(string node)
 {
     Node *gnd = Node::getNode(node);
@@ -274,8 +335,23 @@ void deleteGround(string node)
     gnd->setGround(false);
 }
 
-void parseCommands(vector<string> args)
+vector<string> separateArgs (string input)
 {
+    stringstream ss(input);
+    vector<string> ans = {};
+    string arg;
+    while (ss >> arg)
+    {
+        ans.push_back(arg);
+    }
+    return ans;
+}
+
+void parseCommands(string input)
+{
+    vector<string> args = separateArgs(input);
+    smatch match;
+
     if(args.size() == 1)
     {
         if(args[0] == ".nodes") Node::printAll();
@@ -385,6 +461,41 @@ void parseCommands(vector<string> args)
             else return;
             Inductor::addInductor(args[1].substr(1), args[2], args[3], value);
         }
+    }
+
+    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    {
+
+    }
+
+    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    {
+
+    }
+
+    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    {
+
+    }
+
+    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    {
+
+    }
+
+    //multiple variables
+
+    else if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
+    {
+        Schematic::showAll();
+    }
+
+    else if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)((\\S+\\.txt)(\\s*)")))
+    {
+        //auto address;
+        string address;
+        string name;
+        Schematic* s = new Schematic(name, address);
     }
 
     else
