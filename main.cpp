@@ -222,7 +222,14 @@ class Diode: public Element
 
     public:
     Diode(string name, string node1, string node2, char model):
-    Element(name, node1, node2, 0) {this->type = "diode"; this->model = model;}
+    Element(name, node1, node2, 0)
+    {
+        this->type = "diode"; 
+        this->model = model;
+
+        if(model == 'Z') this->value = 0.7;
+        else this->value = 0;
+    }
 
     static void addDiode(string name, string node1, string node2, char model)
     {
@@ -384,6 +391,10 @@ void parseCommands(vector<string> args)
             }
             else return;
             Inductor::addInductor(args[1].substr(1), args[2], args[3], value);
+        }
+        else if(args[0] == "add" && args[1][0] == 'D')
+        {
+            Diode::addDiode(args[1].substr(1), args[2], args[3], args[4][0]);
         }
     }
 
