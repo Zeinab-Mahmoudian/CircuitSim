@@ -12,6 +12,9 @@
 #include "../include/CircuitUtils.h"
 #include "../include/SchematicManager.h"
 #include "../include/Sinusoidal.h"
+#include "../include/Source.h"
+#include "../include/VoltageSource.h"
+#include "../include/CurrentSource.h"
 #include <bits/stdc++.h>
 
 bool parseCommands(string input);
@@ -21,6 +24,9 @@ void deleteGround(string node);
 
 vector<string> separateArgs (string input);
 
-void calNodeVoltage(float freq);
+//void calNodeVoltage(float freq);
+void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
+
+void transVoltage(float tstart, float tstop, float tstep, string node);
 
 #endif

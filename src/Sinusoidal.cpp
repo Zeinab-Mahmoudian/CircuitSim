@@ -22,3 +22,10 @@ vector<float> Sinusoidal::value(float tstart, float tstop, float tstep){
     }
     return ans;
 }
+
+void fill(vector<vector<float>> &ans, int i, complex<float> x, float freq, float tstart, float tstop, float tstep){
+    float amp = abs(x);
+    float phase = atan2(x.imag(), x.real());
+    Sinusoidal* s = new Sinusoidal(amp, freq, phase, 0);
+    ans[i] = s->value(tstart, tstop, tstep);
+}

@@ -7,9 +7,10 @@
 #include "../include/Diode.h"
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
-#include "../include/SchematicManager.h"
-#include "../include/Source.h"
-#include "../include/VoltageSource.h"
+ #include "../include/SchematicManager.h"
+// #include "../include/Source.h"
+// #include "../include/VoltageSource.h"
+// #include "../include/CurrentSource.h"
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -32,7 +33,7 @@ void deleteGround(string node)
     gnd->setGround(false);
 }
 
-void calNodeVoltage(float freq){
+void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<float>>& ans, float tstart, float tstop, float tstep){
     Element::calComplexValues(freq);
     int n = Node::setIndices();
     int m = VoltageSource::voltageSources.size();
@@ -64,29 +65,45 @@ void calNodeVoltage(float freq){
         }
     }
     int c = n;
-    for (auto s : Source::sources){
-        pair<Node*, Node*> p = s->getNodes();
-        int i = p.first->getIndex();
-        int j = p.second->getIndex();
-        complex<float> z = s->getComplexValue();
-        if (i != -1){
-            a[c][i] = 1;
-            a[i][c] = 1;
+    //int c2 = 0;
+    //for (auto source : Source::sources){
+    //for (auto s : Source::sources){
+        if (s->getType() == "voltage"){
+            pair<Node*, Node*> p = s->getNodes();
+            int i = p.first->getIndex();
+            int j = p.second->getIndex();
+            complex<float> z = s->getComplexValue();
+            if (i != -1){
+                a[c][i] = 1;
+                a[i][c] = 1;
+            }
+            if (j != -1){
+                a[c][j] = -1;
+                a[j][c] = -1;
+            }
+            b[c] = z;
+            c++;
         }
-        if (j != -1){
-            a[c][j] = -1;
-            a[j][c] = -1;
+        else if (s->getType() == "current"){
+            pair<Node*, Node*> p = s->getNodes();
+            int i = p.first->getIndex();
+            int j = p.second->getIndex();
+            complex<float> z = s->getComplexValue();
+            if (i != -1){
+                b[i] = -1.f * z;
+            }
+            if (j != -1){               
+                b[j] = z;
+            }
         }
-        b[c] = z;
-        c++;
-    }
+    //}
     
-    for (int i = 0; i < n + m; i++){
-        for (int j = 0; j < n + m; j++){
-            cout << a[i][j] << ' ';
-        }
-        cout << b[i] << endl;
-    }
+    // for (int i = 0; i < n + m; i++){
+    //     for (int j = 0; j < n + m; j++){
+    //         cout << a[i][j] << ' ';
+    //     }
+    //     cout << b[i] << endl;
+    // }
 
     const float eps = 1e-10f;
     for (int i = 0; i < n + m; i++) {
@@ -94,7 +111,6 @@ void calNodeVoltage(float freq){
             bool found_pivot = false;
             for (int j = i + 1; j < n + m; j++) {
                 if (abs(a[j][i]) > eps) {
-                    //swap(a[i], a[j]);
                     for (int k = 0; k < n + m; ++k) {
                         swap(a[i][k], a[j][k]);
                     }
@@ -103,9 +119,9 @@ void calNodeVoltage(float freq){
                     break;
                 }
             }
-            if (!found_pivot) {
-                throw runtime_error("Matrix is singular or poorly conditioned");
-            }
+            // if (!found_pivot) {
+            //     throw runtime_error("Matrix is singular or poorly conditioned");
+            // }
         }
         for (int j = i + 1; j < n + m; j++) {
             complex<float> factor = a[j][i] / a[i][i];
@@ -121,14 +137,25 @@ void calNodeVoltage(float freq){
         x[i] = sum / a[i][i];
     }
 
-    c = 0;
-    for (int i = 0; i < n; i++){
-        while (Node::nodes[c]->getIndex() < i){
-            c++;
-        }
-        Node::nodes[i]->setComplexVoltage(x[i]);
-        cout << i << ' ' << x[i] << ' ' << endl;
+
+    for (int i = 0; i < nodes.size(); i++){
+        c = nodes[i]->getIndex();
+        //Sinusoidal::fill(ans, i, x[c], freq, tstart, tstop, tstep);
+        fill(ans, i, x[c], freq, tstart, tstop, tstep);
     }
+
+    // c = 0;
+    // for (int i = 0; i < n; i++){
+    //     while (Node::nodes[c]->getIndex() < i){
+    //         c++;
+    //     }
+    //     for (int i = 0; i < nodes.size(); i++){
+            
+    //         f(ans);
+    //     }
+    //     //Node::nodes[i]->setComplexVoltage(x[i]);
+    //     cout << i << ' ' << x[i] << ' ' << endl;
+    // }
 
     //
     for (int i = n; i < n + m; i++){
@@ -137,14 +164,26 @@ void calNodeVoltage(float freq){
 
 }
 
-void transVoltage(float tstart, float fstop, float tstep, string node){
+void transVoltage(float tstart, float tstop, float tstep, string node){
     Node* n = Node::findNode(node);
+    int steps = static_cast<int>(round((tstop - tstart) / tstep));
+    steps++;
+    vector<float> v(steps, 0.0f);
+    vector<vector<float>> ans(1, v);
+    vector<Node*> nodes(1, n);
+    
     for (auto s : Source::sources){
-        //cout << "here" << endl;
-        calNodeVoltage(s->getFreq());
+        calNodeVoltage(s->getFreq(), nodes, s, ans, tstart, tstop, tstep);
     }
-    //cout << "there" << endl;
 
+    cout << "Analysis Result for V(" << node << "):\n";
+    cout << setw(10) << "Time" << setw(10) << "Voltage" << "\n";
+    int c = 0;
+    float time = tstart;
+    while (time <= tstop){
+        cout << setw(10) << time << setw(10) << ans[0][c++] << "\n";
+        time += tstep;
+    }
 }
 
 vector<string> separateArgs (string input)
@@ -178,6 +217,18 @@ bool parseCommands(string input)
         float amp = stof(match[14].str());
         float freq = stof(match[16].str());
         VoltageSource::addVoltageSource(name, node1, node2, offset, amp, freq);
+        return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(I)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(SIN\\()(\\-*\\d+\\.*\\d*)(\\s*)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)(\\))(\\s*)")))
+    {
+        string name = match[5].str();
+        string node1 = match[7].str();
+        string node2 = match[9].str();
+        float offset = stof(match[12].str());
+        float amp = stof(match[14].str());
+        float freq = stof(match[16].str());
+        CurrentSource::addCurrentSource(name, node1, node2, offset, amp, freq);
         return true;
     }
 
