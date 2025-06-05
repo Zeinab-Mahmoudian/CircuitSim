@@ -9,6 +9,8 @@
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
 #include "../include/SchematicManager.h"
+#include "../include/Source.h"
+#include "../include/VoltageSource.h"
 using namespace std;
 
 int main()

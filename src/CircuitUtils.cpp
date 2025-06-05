@@ -8,6 +8,8 @@
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
 #include "../include/SchematicManager.h"
+#include "../include/Source.h"
+#include "../include/VoltageSource.h"
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -52,10 +54,21 @@ bool parseCommands(string input)
         return false;
     }
 
+    if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(V)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(SIN\\()(\\-*\\d+\\.*\\d*)(\\s*)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)(\\))(\\s*)")))
+    {
+        string name = match[5].str();
+        string node1 = match[7].str();
+        string node2 = match[9].str();
+        float offset = stof(match[12].str());
+        float amp = stof(match[14].str());
+        float freq = stof(match[16].str());
+        VoltageSource::addVoltageSource(name, node1, node2, offset, amp, freq);
+        return true;
+    }
+
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
     {
-        
-            return true;
+        return true;
     }
 
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
@@ -216,4 +229,53 @@ bool parseCommands(string input)
 
     throw SyntaxException();
     return true;
+}
+
+void calNodeVoltage(float freq){
+    Element::calComplexValues(freq);
+    int n = Node::setIndices();
+    int m = VoltageSource::voltageSources.size();
+    complex<float> a[n + m][n + m];
+    complex<float> b[n + m];
+    complex<float> x[n + m];
+    //...
+    
+    for (int i = 0; i < n + m; i++) {
+        if (a[i][i] == complex<float>(0, 0)) {
+            for (int j = i + 1; j < n + m; j++) {
+                if (a[j][i] != complex<float>(0, 0)) {
+                    for (int k = 0; k < n; k++)
+                        swap(a[i][k], a[j][k]);
+                    swap(b[i], b[j]);
+                    break;
+                }
+            }
+        }
+        for (int j = i + 1; j < n + m; j++) {
+            complex<float> factor = a[j][i] / a[i][i];
+            for (int k = i; k < n + m; k++)
+                a[j][k] -= factor * a[i][k];
+            b[j] -= factor * b[i];
+        }
+    }
+    for (int i = n + m - 1; i >= 0; i--) {
+        complex<float> sum = b[i];
+        for (int j = i + 1; j < n; j++)
+            sum -= a[i][j] * x[j];
+        x[i] = sum / a[i][i];
+    }
+
+    int c = 0;
+    for (int i = 0; i < n; i++){
+        while (Node::nodes[c]->getIndex() < i){
+            c++;
+        }
+        Node::nodes[i]->setComplexVoltage(x[i]);
+    }
+
+    //
+    for (int i = n; i < n + m; i++){
+
+    }
+
 }

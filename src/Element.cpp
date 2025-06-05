@@ -30,3 +30,23 @@ void Element::printAll()
     }
 }
 
+void Element::calComplexValues(float freq)
+{
+    float r, i;
+    for (auto e : elements){
+        if (e->type == "resistor"){
+            r = e->value;
+            i = 0;
+        }
+        else if (e->getType() == "capacitor"){
+            r = 0;
+            i = (-1) * (e->value) * freq;
+        }
+        else if (e->getType() == "inductor"){
+            r = 0;
+            i = (e->value) * freq;
+        }
+        e->complexValue = complex<float>(r, i);
+    }
+}
+

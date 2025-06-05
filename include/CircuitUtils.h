@@ -11,6 +11,7 @@
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
 #include "../include/SchematicManager.h"
+#include "../include/Sinusoidal.h"
 #include <bits/stdc++.h>
 
 bool parseCommands(string input);
@@ -19,5 +20,7 @@ void setGround(string node);
 void deleteGround(string node);
 
 vector<string> separateArgs (string input);
+
+void calNodeVoltage(float freq);
 
 #endif

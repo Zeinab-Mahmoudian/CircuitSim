@@ -1,11 +1,11 @@
-#ifndef ELEMENT_H
-#define ELEMENT_H
+#ifndef SOURCE_H
+#define SOURCE_H
 
 #include <bits/stdc++.h>
 #include "../include/Exceptions.h"
 #include "../include/Node.h"
 
-class Element
+class Source
 {
     protected:
     string name;
@@ -15,14 +15,14 @@ class Element
     string type;
 
     public:
-    Element(string name, string node1, string node2, float value);
+    Source(string name, string node1, string node2, float value);
 
     string getName();
     pair<Node*, Node*> getNodes();
     float getValue();
     string getType();
 
-    static vector<Element*> elements;
+    static vector<Source*> sources;
     static void printAll();
 
     static void calComplexValues(float freq);

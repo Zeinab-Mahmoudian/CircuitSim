@@ -1,0 +1,18 @@
+#ifndef SINUSOIDAL_H
+#define SINUSOIDAL_H
+
+#include <bits/stdc++.h>
+using namespace std;
+
+class Sinusoidal {
+    private:
+        float amp, freq, phase, dc;
+    public:
+        Sinusoidal(float amp, float freq, float phase, float dc);
+        vector <float> value(float tstart, float tend, float tsetp);
+
+};
+
+
+
+#endif
