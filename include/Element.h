@@ -2,7 +2,8 @@
 #define ELEMENT_H
 
 #include <bits/stdc++.h>
-#include "Node.h"
+#include "../include/Exceptions.h"
+#include "../include/Node.h"
 
 class Element
 {

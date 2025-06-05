@@ -16,12 +16,18 @@ Element(name, node1, node2, 0)
 void Diode::addDiode(string name, string node1, string node2, char model)
 {
     if(model != 'Z' && model != 'D')
-    {cout << "Error: Model " << model << " not found in library" << endl; return;}
+    {
+        throw DiodeModel404Exception(string(1,model));
+        return;
+    }
 
     for(auto e: elements)
     {
         if(e->getName() == name)
-        {cout << "Error: diode " << name << " already exists in the circuit" << endl; return;}
+        {
+            throw DiodeAlreadyExistNameException(name);
+            return;
+        }
     }
 
     elements.push_back(new Diode(name, node1, node2, model));
@@ -34,8 +40,7 @@ void Diode::deleteDiode(string name)
         if(elements[i]->getName() == name)
         {delete elements[i]; elements.erase(elements.begin() + i); return;}
     }
-
-    cout << "Error: Cannot delete diode; component not found" << endl;
+    throw D404Exception();
 }
 
 void Diode::printAll()
