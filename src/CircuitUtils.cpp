@@ -7,6 +7,8 @@
 #include "../include/Diode.h"
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
+#include "../include/SchematicManager.h"
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -20,7 +22,10 @@ void deleteGround(string node)
 {
     Node *gnd = Node::findNode(node);
     if(gnd == nullptr)
-    {cout << "Node does not exist" << endl; return;}
+    {
+        throw NodeNotExistException();
+        return;
+    }
 
     gnd->setGround(false);
 }
@@ -42,27 +47,73 @@ bool parseCommands(string input)
     vector<string> args = separateArgs(input);
     smatch match;
 
-    if(args.size() == 1)
+    if(regex_match(input, match, regex("(\\s*)(end)(\\s*)")))
     {
-        if(args[0] == ".nodes") Node::printAll();
-        else if(args[0] == ".list") Element::printAll();
+        return false;
     }
 
-    else if(args.size() == 2)
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    {
+        
+            return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    {
+        return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    {
+        return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    {
+        return true;
+    }
+
+    //multiple variables
+
+    if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
+    {
+        Schematic::showAll();
+        return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)(\\S+\\.txt)(\\s*)")))
+    {
+        //auto address;
+        string address;
+        string name;
+        Schematic* s = new Schematic(name, address);
+        return true;
+    }
+
+    if(args.size() == 1)
+    {
+        if(args[0] == ".nodes") {Node::printAll(); return true;}
+        else if(args[0] == ".list") {Element::printAll(); return true;}
+    }
+
+    if(args.size() == 2)
     {
         if(args[0] == "delete" && args[1][0] == 'R')
         {
             Resistor::deleteResistor(args[1].substr(1));
+            return true;
         }
-        else if(args[0] == "delete" && args[1][0] == 'C')
+        if(args[0] == "delete" && args[1][0] == 'C')
         {
             Capacitor::deleteCapacitor(args[1].substr(1));
+            return true;
         }
-        else if(args[0] == "delete" && args[1][0] == 'L')
+        if(args[0] == "delete" && args[1][0] == 'L')
         {
             Inductor::deleteInductor(args[1].substr(1));
+            return true;
         }
-        else if(args[0] == ".list")
+        if(args[0] == ".list")
         {
             cout << args[1] << "s: " << endl;
             for(auto element: Element::elements)
@@ -72,42 +123,44 @@ bool parseCommands(string input)
                     cout << element->getName() << endl;
                 }
             }
+            return true;
         }
     }
 
-    else if(args.size() == 3)
+    if(args.size() == 3)
     {
         if(args[0] == "add" && args[1] == "GND")
-        {setGround(args[2]);}
+        {setGround(args[2]); return true;}
 
-        else if(args[0] == "delete" && args[1] == "GND")
-        {deleteGround(args[2]);}
+        if(args[0] == "delete" && args[1] == "GND")
+        {deleteGround(args[2]); return true;}
     }
 
-    else if(args.size() == 4)
+    if(args.size() == 4)
     {
         if(args[0] == ".rename" && args[1] == "node")
         {
             Node *node = Node::findNode(args[2]);
             if(node == nullptr)
             {
-                cout << "ERROR: Node " << args[2] << "  does not exist in the circuit" << endl;
-                return;
+                throw NodeNotExistNameException(args[2]);
+                return true;
             }
 
             if(Node::findNode(args[3]) != nullptr)
             {
-                cout << "ERROR: Node name " << args[3] << " already exists" << endl;
-                return;
+                throw NodeAlreadyExistNameException(args[3]);
+                return true;
             }
 
             node->rename(args[3]);
 
             cout << "SUCCESS: Node renamed from " << args[2] << " to " << args[3] << endl;
+            return true;
         }
     }
 
-    else if(args.size() == 5)
+    if(args.size() == 5)
     {
         if(args[0] == "add" && args[1][0] == 'R')
         {
@@ -120,10 +173,11 @@ bool parseCommands(string input)
                 value = stof(args[4].substr(0,args[4].find('e'))) *
                 powf(10, stof(args[4].substr(args[4].find('e') + 1)));
             }
-            else return;
+            else return true;
             Resistor::addResistor(args[1].substr(1), args[2], args[3], value);
+            return true;
         }
-        else if(args[0] == "add" && args[1][0] == 'C')
+        if(args[0] == "add" && args[1][0] == 'C')
         {
             float value;
             if(isdigit(args[4][0])) value = stof(args[4]);
@@ -134,10 +188,11 @@ bool parseCommands(string input)
                 value = stof(args[4].substr(0,args[4].find('e'))) *
                 powf(10, stof(args[4].substr(args[4].find('e') + 1)));
             }
-            else return;
+            else return true;
             Capacitor::addCapacitor(args[1].substr(1), args[2], args[3], value);
+            return true;
         }
-        else if(args[0] == "add" && args[1][0] == 'L')
+        if(args[0] == "add" && args[1][0] == 'L')
         {
             float value;
             if(isdigit(args[4][0])) value = stof(args[4]);
@@ -148,50 +203,17 @@ bool parseCommands(string input)
                 value = stof(args[4].substr(0,args[4].find('e'))) *
                 powf(10, stof(args[4].substr(args[4].find('e') + 1)));
             }
-            else return;
+            else return true;
             Inductor::addInductor(args[1].substr(1), args[2], args[3], value);
+            return true;
         }
-        else if(args[0] == "add" && args[1][0] == 'D')
+        if(args[0] == "add" && args[1][0] == 'D')
         {
             Diode::addDiode(args[1].substr(1), args[2], args[3], args[4][0]);
+            return true;
         }
     }
 
-    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
-    {
-
-    }
-
-    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
-    {
-
-    }
-
-    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
-    {
-
-    }
-
-    else if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
-    {
-
-    }
-
-    //multiple variables
-
-    else if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
-    {
-        Schematic::showAll();
-    }
-
-    else if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)((\\S+\\.txt)(\\s*)")))
-    {
-        //auto address;
-        string address;
-        string name;
-        Schematic* s = new Schematic(name, address);
-    }
-
-    else
-    {cout << "Error: Syntax error" << endl;}
+    throw SyntaxException();
+    return true;
 }

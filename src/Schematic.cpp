@@ -44,8 +44,7 @@ void Schematic::showAll()
         
         if (!valid)
         {
-            //throw InvalidInputException();
-            cout << "-Error : Inappropriate input" << endl;
+            throw InvalidInputException();
         }
     }
 }

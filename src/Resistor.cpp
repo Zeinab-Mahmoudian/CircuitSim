@@ -9,12 +9,18 @@ Element(name, node1, node2, value) {this->type = "resistor";}
 void Resistor::addResistor(string name, string node1, string node2, float value)
 {
     if(value <= 0)
-    {cout << "Error: Resistance cannot be zero or negative" << endl; return;}
+    {
+        throw RRangeException();
+        return;
+    }
 
     for(auto e: elements)
     {
         if(e->getName() == name)
-        {cout << "Error: Resistor " << name << " already exists in the circuit" << endl; return;}
+        {
+            throw RDuplicateNameException(name);
+            return;
+        }
     }
 
     elements.push_back((Element*) new Resistor(name, node1, node2, value));
@@ -27,8 +33,7 @@ void Resistor::deleteResistor(string name)
         if(elements[i]->getName() == name)
         {delete elements[i]; elements.erase(elements.begin() + i); return;}
     }
-
-    cout << "Cannot delete resistor; component not found" << endl;
+    throw R404Exception();
 }
 
 void Resistor::printAll()

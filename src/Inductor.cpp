@@ -9,12 +9,18 @@ Element(name, node1, node2, value) {this->type = "inductor";}
 void Inductor::addInductor(string name, string node1, string node2, float value)
 {
     if(value == 0)
-    {cout << "Error: Inductance cannot be zero or negative" << endl; return;}
+    {
+        throw LRangeException();
+        return;
+    }
 
     for(auto e: elements)
     {
         if(e->getName() == name)
-        {cout << "Error: inductor " << name << " already exists in the circuit" << endl; return;}
+        {
+            throw LDuplicateNameException(name);
+            return;
+        }
     }
 
     elements.push_back(new Inductor(name, node1, node2, value));
@@ -27,8 +33,7 @@ void Inductor::deleteInductor(string name)
         if(elements[i]->getName() == name)
         {delete elements[i]; elements.erase(elements.begin() + i); return;}
     }
-
-    cout << "Error: Cannot delete inductor; component not found" << endl;
+    throw L404Exception();
 }
 
 void Inductor::printAll()

@@ -8,6 +8,7 @@
 #include "../include/Diode.h"
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
+#include "../include/SchematicManager.h"
 using namespace std;
 
 int main()
