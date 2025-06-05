@@ -80,43 +80,31 @@ void calNodeVoltage(float freq){
         b[c] = z;
         c++;
     }
-
-
-    // for (int i = 0; i < n; i++){
-    //     for (int j = 0; j < n; j++){
-
-    //     }
-    // }
-    // for (int i = 0; i < n; i++){
-    //     for (int j = n; j < n + m; j++){
-
-    //     }
-    // }
-    // for (int i = n; i < n + m; i++){
-    //     for (int j = n; j < n + m; j++){
-    //         a[i][j] = complex<float>(0, 0);
-    //     }
-    // }
-
-    cout << "**********" << endl;
+    
     for (int i = 0; i < n + m; i++){
         for (int j = 0; j < n + m; j++){
             cout << a[i][j] << ' ';
         }
         cout << b[i] << endl;
     }
-    cout << "**********" << endl;
 
-    
+    const float eps = 1e-10f;
     for (int i = 0; i < n + m; i++) {
-        if (a[i][i] == complex<float>(0, 0)) {
+        if (abs(a[i][i]) < eps) {
+            bool found_pivot = false;
             for (int j = i + 1; j < n + m; j++) {
-                if (a[j][i] != complex<float>(0, 0)) {
-                    for (int k = 0; k < n; k++)
+                if (abs(a[j][i]) > eps) {
+                    //swap(a[i], a[j]);
+                    for (int k = 0; k < n + m; ++k) {
                         swap(a[i][k], a[j][k]);
+                    }
                     swap(b[i], b[j]);
+                    found_pivot = true;
                     break;
                 }
+            }
+            if (!found_pivot) {
+                throw runtime_error("Matrix is singular or poorly conditioned");
             }
         }
         for (int j = i + 1; j < n + m; j++) {
@@ -128,7 +116,7 @@ void calNodeVoltage(float freq){
     }
     for (int i = n + m - 1; i >= 0; i--) {
         complex<float> sum = b[i];
-        for (int j = i + 1; j < n; j++)
+        for (int j = i + 1; j < n + m; j++)
             sum -= a[i][j] * x[j];
         x[i] = sum / a[i][i];
     }
@@ -139,6 +127,7 @@ void calNodeVoltage(float freq){
             c++;
         }
         Node::nodes[i]->setComplexVoltage(x[i]);
+        cout << i << ' ' << x[i] << ' ' << endl;
     }
 
     //
@@ -151,8 +140,11 @@ void calNodeVoltage(float freq){
 void transVoltage(float tstart, float fstop, float tstep, string node){
     Node* n = Node::findNode(node);
     for (auto s : Source::sources){
+        //cout << "here" << endl;
         calNodeVoltage(s->getFreq());
     }
+    //cout << "there" << endl;
+
 }
 
 vector<string> separateArgs (string input)
