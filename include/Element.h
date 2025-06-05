@@ -21,7 +21,8 @@ class Element
     pair<Node*, Node*> getNodes();
     float getValue();
     string getType();
-
+    complex<float> getComplexValue();
+    
     static vector<Element*> elements;
     static void printAll();
 

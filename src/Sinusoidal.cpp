@@ -9,12 +9,12 @@ Sinusoidal::Sinusoidal(float amp, float freq, float phase, float dc){
     this->dc = dc;
 }
 
-vector<float> Sinusoidal::value(float tstart, float tend, float tstep){
+vector<float> Sinusoidal::value(float tstart, float tstop, float tstep){
     float time = tstart;
     float angle;
     float x;
     vector<float> ans;
-    while (time <= tend){
+    while (time <= tstop){
         angle = freq * time + phase;
         x = cos(angle) * amp + dc;
         ans.push_back(x);

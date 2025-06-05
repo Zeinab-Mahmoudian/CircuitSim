@@ -7,7 +7,7 @@ vector<VoltageSource*> VoltageSource::voltageSources;
 
 
 VoltageSource::VoltageSource(string name, string node1, string node2, float value, float amp, float freq):
-Source(name, node1, node2, value) {
+Source(name, node1, node2, value, amp, freq) {
     this->type = "voltage";
     this->complexValue.real(0);
     this->complexValue.imag(-1 * amp);

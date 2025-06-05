@@ -10,17 +10,19 @@ class Source
     protected:
     string name;
     Node *n1, *n2;
-    float value;
+    float value, amp, freq, phase;
     complex<float> complexValue;
     string type;
 
     public:
-    Source(string name, string node1, string node2, float value);
+    Source(string name, string node1, string node2, float value, float amp, float freq);
 
     string getName();
     pair<Node*, Node*> getNodes();
     float getValue();
     string getType();
+    float getFreq();
+    complex<float> getComplexValue();
 
     static vector<Source*> sources;
     static void printAll();

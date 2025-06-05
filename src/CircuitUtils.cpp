@@ -32,6 +32,129 @@ void deleteGround(string node)
     gnd->setGround(false);
 }
 
+void calNodeVoltage(float freq){
+    Element::calComplexValues(freq);
+    int n = Node::setIndices();
+    int m = VoltageSource::voltageSources.size();
+    complex<float> a[n + m][n + m];
+    complex<float> b[n + m];
+    complex<float> x[n + m];
+
+    for (int i = 0; i < n + m; i++){
+        for (int j = 0; j < n + m; j++){
+            a[i][j] = complex<float>(0, 0);
+        }
+    }
+
+    for (auto e : Element::elements){
+        pair<Node*, Node*> p = e->getNodes();
+        int i = p.first->getIndex();
+        int j = p.second->getIndex();
+        complex<float> z = e->getComplexValue();
+        complex<float> g = 1.0f / z;
+        if (i != -1){
+            a[i][i] += g;
+        }
+        if (j != -1){
+            a[j][j] += g;
+        }
+        if ((i != -1) && (j != -1)){
+            a[i][j] -= g;
+            a[j][i] -= g;
+        }
+    }
+    int c = n;
+    for (auto s : Source::sources){
+        pair<Node*, Node*> p = s->getNodes();
+        int i = p.first->getIndex();
+        int j = p.second->getIndex();
+        complex<float> z = s->getComplexValue();
+        if (i != -1){
+            a[c][i] = 1;
+            a[i][c] = 1;
+        }
+        if (j != -1){
+            a[c][j] = -1;
+            a[j][c] = -1;
+        }
+        b[c] = z;
+        c++;
+    }
+
+
+    // for (int i = 0; i < n; i++){
+    //     for (int j = 0; j < n; j++){
+
+    //     }
+    // }
+    // for (int i = 0; i < n; i++){
+    //     for (int j = n; j < n + m; j++){
+
+    //     }
+    // }
+    // for (int i = n; i < n + m; i++){
+    //     for (int j = n; j < n + m; j++){
+    //         a[i][j] = complex<float>(0, 0);
+    //     }
+    // }
+
+    cout << "**********" << endl;
+    for (int i = 0; i < n + m; i++){
+        for (int j = 0; j < n + m; j++){
+            cout << a[i][j] << ' ';
+        }
+        cout << b[i] << endl;
+    }
+    cout << "**********" << endl;
+
+    
+    for (int i = 0; i < n + m; i++) {
+        if (a[i][i] == complex<float>(0, 0)) {
+            for (int j = i + 1; j < n + m; j++) {
+                if (a[j][i] != complex<float>(0, 0)) {
+                    for (int k = 0; k < n; k++)
+                        swap(a[i][k], a[j][k]);
+                    swap(b[i], b[j]);
+                    break;
+                }
+            }
+        }
+        for (int j = i + 1; j < n + m; j++) {
+            complex<float> factor = a[j][i] / a[i][i];
+            for (int k = i; k < n + m; k++)
+                a[j][k] -= factor * a[i][k];
+            b[j] -= factor * b[i];
+        }
+    }
+    for (int i = n + m - 1; i >= 0; i--) {
+        complex<float> sum = b[i];
+        for (int j = i + 1; j < n; j++)
+            sum -= a[i][j] * x[j];
+        x[i] = sum / a[i][i];
+    }
+
+    c = 0;
+    for (int i = 0; i < n; i++){
+        while (Node::nodes[c]->getIndex() < i){
+            c++;
+        }
+        Node::nodes[i]->setComplexVoltage(x[i]);
+    }
+
+    //
+    for (int i = n; i < n + m; i++){
+
+    }
+
+}
+
+void transVoltage(float tstart, float fstop, float tstep, string node){
+    Node* n = Node::findNode(node);
+    for (auto s : Source::sources){
+        calNodeVoltage(s->getFreq());
+    }
+}
+
 vector<string> separateArgs (string input)
 {
     stringstream ss(input);
@@ -66,8 +189,14 @@ bool parseCommands(string input)
         return true;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(n\\d{3})(\\))(\\s*)")))
     {
+        float tstep = stof(match[6].str());
+        float tstop = stof(match[8].str());
+        float tstart = stof(match[10].str());
+        string node = match[13].str();
+        transVoltage(tstart, tstop, tstep, node);
         return true;
     }
 
@@ -231,51 +360,3 @@ bool parseCommands(string input)
     return true;
 }
 
-void calNodeVoltage(float freq){
-    Element::calComplexValues(freq);
-    int n = Node::setIndices();
-    int m = VoltageSource::voltageSources.size();
-    complex<float> a[n + m][n + m];
-    complex<float> b[n + m];
-    complex<float> x[n + m];
-    //...
-    
-    for (int i = 0; i < n + m; i++) {
-        if (a[i][i] == complex<float>(0, 0)) {
-            for (int j = i + 1; j < n + m; j++) {
-                if (a[j][i] != complex<float>(0, 0)) {
-                    for (int k = 0; k < n; k++)
-                        swap(a[i][k], a[j][k]);
-                    swap(b[i], b[j]);
-                    break;
-                }
-            }
-        }
-        for (int j = i + 1; j < n + m; j++) {
-            complex<float> factor = a[j][i] / a[i][i];
-            for (int k = i; k < n + m; k++)
-                a[j][k] -= factor * a[i][k];
-            b[j] -= factor * b[i];
-        }
-    }
-    for (int i = n + m - 1; i >= 0; i--) {
-        complex<float> sum = b[i];
-        for (int j = i + 1; j < n; j++)
-            sum -= a[i][j] * x[j];
-        x[i] = sum / a[i][i];
-    }
-
-    int c = 0;
-    for (int i = 0; i < n; i++){
-        while (Node::nodes[c]->getIndex() < i){
-            c++;
-        }
-        Node::nodes[i]->setComplexVoltage(x[i]);
-    }
-
-    //
-    for (int i = n; i < n + m; i++){
-
-    }
-
-}

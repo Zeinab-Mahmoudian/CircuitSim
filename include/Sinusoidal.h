@@ -9,7 +9,7 @@ class Sinusoidal {
         float amp, freq, phase, dc;
     public:
         Sinusoidal(float amp, float freq, float phase, float dc);
-        vector <float> value(float tstart, float tend, float tsetp);
+        vector <float> value(float tstart, float stop, float tsetp);
 
 };
 

@@ -19,6 +19,7 @@ string Element::getName() {return name;}
 pair<Node*, Node*> Element::getNodes() {return {n1, n2};}
 float Element::getValue() {return value;}
 string Element::getType() {return type;}
+complex<float> Element::getComplexValue(){return complexValue;}
 
 
 void Element::printAll()
