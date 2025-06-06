@@ -11,6 +11,7 @@ class Element
     string name;
     Node *n1, *n2;
     float value;
+    float DCValue;
     complex<float> complexValue;
     string type;
 
@@ -22,11 +23,13 @@ class Element
     float getValue();
     string getType();
     complex<float> getComplexValue();
+    float getDCValue();
     
     static vector<Element*> elements;
     static void printAll();
 
     static void calComplexValues(float freq);
+    static int calDCValues();
 };
 
 #endif 

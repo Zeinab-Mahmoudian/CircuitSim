@@ -22,6 +22,7 @@ void setGround(string node);
 void deleteGround(string node);
 
 void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
+void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
 
 void transVoltage(float tstart, float tstop, float tstep, string node);
 

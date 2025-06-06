@@ -20,6 +20,7 @@ pair<Node*, Node*> Element::getNodes() {return {n1, n2};}
 float Element::getValue() {return value;}
 string Element::getType() {return type;}
 complex<float> Element::getComplexValue(){return complexValue;}
+float Element::getDCValue(){return DCValue;}
 
 
 void Element::printAll()
@@ -49,5 +50,23 @@ void Element::calComplexValues(float freq)
         }
         e->complexValue = complex<float>(r, i);
     }
+}
+
+int Element::calDCValues()
+{
+    int cnt = 0;
+    for (auto e : elements){
+        if (e->type == "resistor"){
+            e->DCValue = e->value;
+        }
+        else if (e->getType() == "capacitor"){
+            e->DCValue = -1;
+        }
+        else if (e->getType() == "inductor"){
+            e->DCValue = 0;
+            cnt++;
+        }
+    }
+    return cnt;
 }
 

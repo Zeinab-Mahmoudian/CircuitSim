@@ -14,6 +14,7 @@ class Sinusoidal {
 };
 
 void fill(vector<vector<float>> &ans, int i, complex<float> x, float freq, float tstart, float tstop, float tstep);
+void fillDC(vector<vector<float>> &ans, int i, float x);
 
 
 #endif
