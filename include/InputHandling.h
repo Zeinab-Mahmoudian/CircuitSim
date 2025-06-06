@@ -1,5 +1,5 @@
-#ifndef CIRCUIT_UTILS_H
-#define CIRCUIT_UTILS_H
+#ifndef INPUT_HANDLING_H
+#define INPUT_HANDLING_H
 
 #include "../include/Exceptions.h"
 #include "../include/Node.h"
@@ -15,14 +15,11 @@
 #include "../include/Source.h"
 #include "../include/VoltageSource.h"
 #include "../include/CurrentSource.h"
+#include "../include/CircuitUtils.h"
 #include <bits/stdc++.h>
 
+bool parseCommands(string input);
 
-void setGround(string node);
-void deleteGround(string node);
-
-void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
-
-void transVoltage(float tstart, float tstop, float tstep, string node);
+vector<string> separateArgs (string input);
 
 #endif
