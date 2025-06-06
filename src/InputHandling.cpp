@@ -25,6 +25,27 @@ bool parseCommands(string input)
         return false;
     }
 
+    if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(VoltageSource)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)")))
+    {
+        string name = match[5].str();
+        string node1 = match[7].str();
+        string node2 = match[9].str();
+        float value = stof(match[11].str());
+        //VoltageSource::addVoltageSource(name, node1, node2, value, 0, 0);
+        VoltageSource::addVoltageSource(name, node1, node2, value, 0, 1);
+        return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(CurrentSource)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)")))
+    {
+        string name = match[5].str();
+        string node1 = match[7].str();
+        string node2 = match[9].str();        
+        float value = stof(match[11].str());
+        CurrentSource::addCurrentSource(name, node1,  node2, value, 0, 1);
+        return true;
+    }
+
     if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(V)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(SIN\\()(\\-*\\d+\\.*\\d*)(\\s*)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)(\\))(\\s*)")))
     {
         string name = match[5].str();
@@ -50,7 +71,8 @@ bool parseCommands(string input)
     }
 
     //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(n\\d{3})(\\))(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(n\\d{3})(\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
     {
         float tstep = stof(match[6].str());
         float tstop = stof(match[8].str());
@@ -60,7 +82,8 @@ bool parseCommands(string input)
         return true;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
     {
         return true;
     }

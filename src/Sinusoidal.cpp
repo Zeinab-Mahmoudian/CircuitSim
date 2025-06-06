@@ -32,3 +32,11 @@ void fill(vector<vector<float>> &ans, int i, complex<float> x, float freq, float
         ans[i][j] += v[j];
     }    
 }
+
+void fillDC(vector<vector<float>> &ans, int i, float x){
+    for (int j = 0; j < ans[i].size(); j++){
+        ans[i][j] += x;
+        //cout << ans[i][j] << ' ';
+    }
+    //cout << "\n\n";
+}
