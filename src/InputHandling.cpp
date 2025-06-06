@@ -88,12 +88,19 @@ bool parseCommands(string input)
         return true;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\()([RCL].+?)(\\))(\\s*)")))
     {
+        float tstep = stof(match[6].str());
+        float tstop = stof(match[8].str());
+        float tstart = stof(match[10].str());
+        string element = match[13].str();
+        transCurrent(tstart, tstop, tstep, element);
         return true;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCL]\\S+\\))(\\s*)")))
     {
         return true;
     }

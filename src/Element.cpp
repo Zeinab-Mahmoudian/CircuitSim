@@ -70,3 +70,11 @@ int Element::calDCValues()
     return cnt;
 }
 
+Element* Element::findElement(string name){
+    for (Element* e : elements){
+        if (e->name == name){
+            return e;
+        }
+    }
+    return nullptr;
+}

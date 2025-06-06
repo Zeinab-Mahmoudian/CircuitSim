@@ -8,7 +8,7 @@ Element(name, node1, node2, value) {this->type = "inductor";}
 
 void Inductor::addInductor(string name, string node1, string node2, float value)
 {
-    if(value == 0)
+    if(value <= 0)
     {
         throw LRangeException();
         return;

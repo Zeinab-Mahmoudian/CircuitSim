@@ -25,5 +25,6 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vect
 void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
 
 void transVoltage(float tstart, float tstop, float tstep, string node);
+void transCurrent(float tstart, float tstop, float tstep, string element);
 
 #endif

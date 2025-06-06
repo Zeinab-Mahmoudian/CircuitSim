@@ -25,6 +25,8 @@ class Element
     complex<float> getComplexValue();
     float getDCValue();
     
+    static Element* findElement(string name);
+    
     static vector<Element*> elements;
     static void printAll();
 

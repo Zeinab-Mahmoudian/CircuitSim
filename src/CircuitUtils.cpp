@@ -277,6 +277,10 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
 
 void transVoltage(float tstart, float tstop, float tstep, string node){
     Node* n = Node::findNode(node);
+    if (n == nullptr){
+        throw NodeNotExistNameException(node);
+        return;
+    }
     int steps = static_cast<int>(round((tstop - tstart) / tstep));
     steps++;
     vector<float> v(steps, 0.0f);
@@ -288,9 +292,46 @@ void transVoltage(float tstart, float tstop, float tstep, string node){
     }
     calNodeVoltageDC(nodes, ans, tstart, tstop, tstep);
 
-
     cout << "Analysis Result for V(" << node << "):\n";
     cout << setw(10) << "Time" << setw(10) << "Voltage" << "\n";
+    int c = 0;
+    float time = tstart;
+    while (time <= tstop){
+        if (c >= ans[0].size()){
+            break;
+        }
+        cout << setw(10) << time << setw(10) << ans[0][c++] << "\n";
+        time += tstep;
+    }
+}
+
+void transCurrent(float tstart, float tstop, float tstep, string element){
+    Element* e = Element::findElement(element);
+    if (e == nullptr){
+        throw ComponentNotExistException(element);
+        return;
+    }
+    int steps = static_cast<int>(round((tstop - tstart) / tstep));
+    steps++;
+    // vector<float> v(steps, 0.0f);
+    // vector<vector<float>> ans(2, v);
+    pair<Node*, Node*> p = e->getNodes();
+    vector<Node*> nodes;
+    nodes.push_back(p.first);
+    nodes.push_back(p.second);
+
+    for (auto s : Source::sources){
+        vector<float> v(steps, 0.0f);
+        vector<vector<float>> ans(2, v);
+        calNodeVoltage(s->getFreq(), nodes, s, ans, tstart, tstop, tstep);
+        
+    }
+    vector<float> v(steps, 0.0f);
+    vector<vector<float>> ans(2, v);
+    calNodeVoltageDC(nodes, ans, tstart, tstop, tstep);
+
+    cout << "Analysis Result for I(" << element << "):\n";
+    cout << setw(10) << "Time" << setw(10) << "Current" << "\n";
     int c = 0;
     float time = tstart;
     while (time <= tstop){

@@ -165,4 +165,19 @@ public:
     }
 };
 
+//class Component404Exception : public exception {
+class ComponentNotExistException : public exception {
+private:
+    string name; 
+    mutable string message; 
+public:
+    explicit ComponentNotExistException(const string& name) : name(name) {}
+    
+    const char* what() const noexcept override {
+        message = "ERROR: Component " + name + " does not exist in the circuit";
+        return message.c_str();
+    }
+};
+
+
 #endif
