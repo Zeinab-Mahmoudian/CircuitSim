@@ -65,8 +65,6 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vect
         }
     }
     int c = n;
-    //int c2 = 0;
-    //for (auto source : Source::sources){
     for (auto s : Source::sources){
         if (s->getType() == "voltage"){
             pair<Node*, Node*> p = s->getNodes();
@@ -104,12 +102,6 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vect
         }
     }
     
-    // for (int i = 0; i < n + m; i++){
-    //     for (int j = 0; j < n + m; j++){
-    //         cout << a[i][j] << ' ';
-    //     }
-    //     cout << b[i] << endl;
-    // }
 
     const float eps = 1e-10f;
     for (int i = 0; i < n + m; i++) {
@@ -147,24 +139,8 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vect
 
     for (int i = 0; i < nodes.size(); i++){
         c = nodes[i]->getIndex();
-        //Sinusoidal::fill(ans, i, x[c], freq, tstart, tstop, tstep);
-        //cout << "called fill" << endl;
         fill(ans, i, x[c], freq, tstart, tstop, tstep);
-        //cout << "and done" << endl;
     }
-
-    // c = 0;
-    // for (int i = 0; i < n; i++){
-    //     while (Node::nodes[c]->getIndex() < i){
-    //         c++;
-    //     }
-    //     for (int i = 0; i < nodes.size(); i++){
-            
-    //         f(ans);
-    //     }
-    //     //Node::nodes[i]->setComplexVoltage(x[i]);
-    //     cout << i << ' ' << x[i] << ' ' << endl;
-    // }
 
     //
     for (int i = n; i < n + m; i++){
@@ -411,4 +387,3 @@ bool parseCommands(string input)
     throw SyntaxException();
     return true;
 }
-
