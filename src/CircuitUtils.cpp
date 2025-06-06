@@ -119,9 +119,10 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<fl
                     break;
                 }
             }
-            // if (!found_pivot) {
-            //     throw runtime_error("Matrix is singular or poorly conditioned");
-            // }
+            if (!found_pivot) {
+                throw runtime_error("Oops! Is your circuit connected?!");
+                //throw runtime_error("Matrix is singular or poorly conditioned");
+            }
         }
         for (int j = i + 1; j < n + m; j++) {
             complex<float> factor = a[j][i] / a[i][i];
@@ -141,7 +142,9 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<fl
     for (int i = 0; i < nodes.size(); i++){
         c = nodes[i]->getIndex();
         //Sinusoidal::fill(ans, i, x[c], freq, tstart, tstop, tstep);
+        //cout << "called fill" << endl;
         fill(ans, i, x[c], freq, tstart, tstop, tstep);
+        //cout << "and done" << endl;
     }
 
     // c = 0;
