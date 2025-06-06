@@ -7,7 +7,10 @@
 #include "../include/Diode.h"
 #include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
-#include "../include/SchematicManager.h"
+ #include "../include/SchematicManager.h"
+// #include "../include/Source.h"
+// #include "../include/VoltageSource.h"
+// #include "../include/CurrentSource.h"
 
 #include <bits/stdc++.h>
 using namespace std;
@@ -30,8 +33,6 @@ void deleteGround(string node)
     gnd->setGround(false);
 }
 
-<<<<<<< Updated upstream
-=======
 void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vector<float>>& ans, float tstart, float tstop, float tstep){
     Element::calComplexValues(freq);
     int n = Node::setIndices();
@@ -177,7 +178,6 @@ void transVoltage(float tstart, float tstop, float tstep, string node){
     int steps = static_cast<int>(round((tstop - tstart) / tstep));
     steps++;
     vector<float> v(steps, 0.0f);
-    //cout << 'v' << v.size() << endl;
     vector<vector<float>> ans(1, v);
     vector<Node*> nodes(1, n);
     
@@ -195,7 +195,6 @@ void transVoltage(float tstart, float tstop, float tstep, string node){
     }
 }
 
->>>>>>> Stashed changes
 vector<string> separateArgs (string input)
 {
     stringstream ss(input);
@@ -218,10 +217,39 @@ bool parseCommands(string input)
         return false;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(V)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(SIN\\()(\\-*\\d+\\.*\\d*)(\\s*)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)(\\))(\\s*)")))
     {
-        
-            return true;
+        string name = match[5].str();
+        string node1 = match[7].str();
+        string node2 = match[9].str();
+        float offset = stof(match[12].str());
+        float amp = stof(match[14].str());
+        float freq = stof(match[16].str());
+        VoltageSource::addVoltageSource(name, node1, node2, offset, amp, freq);
+        return true;
+    }
+
+    if(regex_match(input, match, regex("(\\s*)(add)(\\s+)(I)(\\S+)(\\s+)(\\S+)(\\s+)(\\S+)(\\s+)(SIN\\()(\\-*\\d+\\.*\\d*)(\\s*)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s*)(\\))(\\s*)")))
+    {
+        string name = match[5].str();
+        string node1 = match[7].str();
+        string node2 = match[9].str();
+        float offset = stof(match[12].str());
+        float amp = stof(match[14].str());
+        float freq = stof(match[16].str());
+        CurrentSource::addCurrentSource(name, node1, node2, offset, amp, freq);
+        return true;
+    }
+
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(n\\d{3})(\\))(\\s*)")))
+    {
+        float tstep = stof(match[6].str());
+        float tstop = stof(match[8].str());
+        float tstart = stof(match[10].str());
+        string node = match[13].str();
+        transVoltage(tstart, tstop, tstep, node);
+        return true;
     }
 
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
@@ -383,3 +411,4 @@ bool parseCommands(string input)
     throw SyntaxException();
     return true;
 }
+

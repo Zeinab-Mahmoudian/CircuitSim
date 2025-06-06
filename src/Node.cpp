@@ -48,3 +48,32 @@ void Node::printAll()
     }
     cout << endl;
 }
+
+void Node::setComplexVoltage(complex<float> cv){
+    this->complexVoltage = cv;
+}
+
+complex<float> Node::getComplexVoltage(){
+    return complexVoltage;
+}
+
+void Node::setIndex(int i){
+    this->index = i;
+}
+
+int Node::getIndex(){
+    return index;
+}
+
+int Node::setIndices(){
+    int c = 0;
+    for (Node* n : nodes){
+        if (n->isGround){
+            n->index = -1;
+        }
+        else{
+            n->index = c++;
+        }
+    }
+    return c;
+}
