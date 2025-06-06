@@ -33,7 +33,7 @@ void deleteGround(string node)
     gnd->setGround(false);
 }
 
-void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<float>>& ans, float tstart, float tstop, float tstep){
+void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vector<float>>& ans, float tstart, float tstop, float tstep){
     Element::calComplexValues(freq);
     int n = Node::setIndices();
     int m = VoltageSource::voltageSources.size();
@@ -67,12 +67,15 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<fl
     int c = n;
     //int c2 = 0;
     //for (auto source : Source::sources){
-    //for (auto s : Source::sources){
+    for (auto s : Source::sources){
         if (s->getType() == "voltage"){
             pair<Node*, Node*> p = s->getNodes();
             int i = p.first->getIndex();
             int j = p.second->getIndex();
             complex<float> z = s->getComplexValue();
+            if (s != source){
+                z = complex<float>(0,0);
+            }
             if (i != -1){
                 a[c][i] = 1;
                 a[i][c] = 1;
@@ -85,6 +88,9 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<fl
             c++;
         }
         else if (s->getType() == "current"){
+            if (s != source){
+                continue;
+            }
             pair<Node*, Node*> p = s->getNodes();
             int i = p.first->getIndex();
             int j = p.second->getIndex();
@@ -96,7 +102,7 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* s, vector<vector<fl
                 b[j] = z;
             }
         }
-    //}
+    }
     
     // for (int i = 0; i < n + m; i++){
     //     for (int j = 0; j < n + m; j++){
