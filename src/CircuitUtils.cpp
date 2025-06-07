@@ -83,11 +83,9 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vect
             complex<float> z = s->getComplexValue();
             if (i != -1){
                 b[i] -= z;
-                //b[i] = -1.f * z;
             }
             if (j != -1){               
                 b[j] += z;
-                //b[j] = z;
             }
         }
     }
@@ -201,7 +199,7 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
             pair<Node*, Node*> p = s->getNodes();
             int i = p.first->getIndex();
             int j = p.second->getIndex();
-            float v = s->getValue(); //DC
+            float v = s->getValue();
             if (i != -1){
                 a[c][i] = 1;
                 a[i][c] = 1;
@@ -217,24 +215,15 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
             pair<Node*, Node*> p = s->getNodes();
             int i = p.first->getIndex();
             int j = p.second->getIndex();
-            float ii = s->getValue(); //DC
+            float ii = s->getValue();
             if (i != -1){
                 b[i] -= ii;
-                //b[i] = -1.f * ii;
             }
             if (j != -1){               
                 b[j] += ii;
-                //b[j] = ii;
             }
         }
     }
-
-    // for (int i = 0; i < n + m; i++){
-    //     for (int j = 0; j < n + m; j++){
-    //         cout << a[i][j] <<' ';
-    //     }
-    //     cout << b[i] << endl;
-    // }
 
     for (int i = 0; i < n + m; i++) {
         int maxRow = i;
@@ -247,11 +236,6 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
             swap(a[i][j], a[maxRow][j]);
         }
         swap(b[i], b[maxRow]); 
-        
-        if (std::abs(a[i][i]) < 1e-6f) {
-            std::cerr << "Zero (or near-zero) pivot at row " << i << " → matrix may be singular.\n";
-            continue; 
-        }
         for (int j = i + 1; j < n + m; j++) {
             float factor = a[j][i] / a[i][i];
             for (int k = i; k < n + m; k++)
@@ -266,10 +250,6 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
         x[i] = sum / a[i][i];
     }
 
-    // for (int i = 0; i < n + m; i++){
-    //     cout << x[i] << endl;
-    // }
-
     for (int i = 0; i < nodes.size(); i++){
         c = nodes[i]->getIndex();
         //fillDC(ans, i, x[c]);
@@ -280,7 +260,6 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
     for (int i = n; i < n + m; i++){
 
     }
-
 }
 
 void transVoltage(float tstart, float tstop, float tstep, string node){
@@ -375,11 +354,9 @@ complex<float> calNodeVoltageComplex(float freq, vector<Node*> nodes, Source* so
             complex<float> z = s->getComplexValue();
             if (i != -1){
                 b[i] -= z;
-                //b[i] = -1.f * z;
             }
             if (j != -1){               
                 b[j] += z;
-                //b[j] = z;
             }
         }
     }
@@ -480,7 +457,7 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
             pair<Node*, Node*> p = s->getNodes();
             int i = p.first->getIndex();
             int j = p.second->getIndex();
-            float v = s->getValue(); //DC
+            float v = s->getValue();
             if (i != -1){
                 a[c][i] = 1;
                 a[i][c] = 1;
@@ -496,14 +473,12 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
             pair<Node*, Node*> p = s->getNodes();
             int i = p.first->getIndex();
             int j = p.second->getIndex();
-            float ii = s->getValue(); //DC
+            float ii = s->getValue();
             if (i != -1){
                 b[i] -= ii;
-                //b[i] = -1.f * ii;
             }
             if (j != -1){               
                 b[j] += ii;
-                //b[j] = ii;
             }
         }
     }
@@ -552,12 +527,8 @@ void transCurrent(float tstart, float tstop, float tstep, string element){
     complex<float> deltaV;
     for (auto s : Source::sources){
         deltaV = calNodeVoltageComplex(s->getFreq(), nodes, s, tstart, tstop, tstep);
-        //*
         Element::calComplexValues(s->getFreq());
-        //cout << deltaV << endl;
         deltaV /= e->getComplexValue();
-        //cout << deltaV << endl;
-
         fill(ans, 0, deltaV, s->getFreq(), tstart, tstop, tstep);
     }
     deltaV = calNodeVoltageDCComplex(nodes, tstart, tstop, tstep);
