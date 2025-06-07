@@ -129,7 +129,8 @@ void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vect
 
     for (int i = 0; i < nodes.size(); i++){
         c = nodes[i]->getIndex();
-        fill(ans, i, x[c], freq, tstart, tstop, tstep);
+        //fill(ans, i, x[c], freq, tstart, tstop, tstep);
+        fill(ans, 0, x[c], freq, tstart, tstop, tstep);
     }
 
     //
@@ -228,17 +229,29 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
         }
     }
 
+    // for (int i = 0; i < n + m; i++){
+    //     for (int j = 0; j < n + m; j++){
+    //         cout << a[i][j] <<' ';
+    //     }
+    //     cout << b[i] << endl;
+    // }
+
     for (int i = 0; i < n + m; i++) {
         int maxRow = i;
-        for (int k = i + 1; k < n; ++k) {
+        for (int k = i + 1; k < n + m; ++k) {
             if (abs(a[k][i]) > abs(a[maxRow][i])) {
                 maxRow = k;
             }
         }
-        for (int j = 0; j < n; ++j) {
+        for (int j = 0; j < n + m; ++j) {
             swap(a[i][j], a[maxRow][j]);
         }
         swap(b[i], b[maxRow]); 
+        
+        if (std::abs(a[i][i]) < 1e-6f) {
+            std::cerr << "Zero (or near-zero) pivot at row " << i << " → matrix may be singular.\n";
+            continue; 
+        }
         for (int j = i + 1; j < n + m; j++) {
             float factor = a[j][i] / a[i][i];
             for (int k = i; k < n + m; k++)
@@ -253,9 +266,14 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
         x[i] = sum / a[i][i];
     }
 
+    // for (int i = 0; i < n + m; i++){
+    //     cout << x[i] << endl;
+    // }
+
     for (int i = 0; i < nodes.size(); i++){
         c = nodes[i]->getIndex();
-        fillDC(ans, i, x[c]);
+        //fillDC(ans, i, x[c]);
+        fillDC(ans, 0, x[c]);
     }
 
     //
@@ -276,7 +294,6 @@ void transVoltage(float tstart, float tstop, float tstep, string node){
     vector<float> v(steps, 0.0f);
     vector<vector<float>> ans(1, v);
     vector<Node*> nodes(1, n);
-    
     for (auto s : Source::sources){
         calNodeVoltage(s->getFreq(), nodes, s, ans, tstart, tstop, tstep);
     }
