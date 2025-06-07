@@ -24,6 +24,9 @@ void deleteGround(string node);
 void calNodeVoltage(float freq, vector<Node*> nodes, Source* source, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
 void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tstart, float tstop, float tstep);
 
+pair<complex<float>, complex<float>> calNodeVoltageComplex(float freq, vector<Node*> nodes, Source* source, float tstart, float tstop, float tstep);
+pair<complex<float>, complex<float>> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float tstop, float tstep);
+
 void transVoltage(float tstart, float tstop, float tstep, string node);
 void transCurrent(float tstart, float tstop, float tstep, string element);
 
