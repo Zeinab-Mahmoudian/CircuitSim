@@ -31,7 +31,6 @@ bool parseCommands(string input)
         string node1 = match[7].str();
         string node2 = match[9].str();
         float value = stof(match[11].str());
-        //VoltageSource::addVoltageSource(name, node1, node2, value, 0, 0);
         VoltageSource::addVoltageSource(name, node1, node2, value, 0, 1);
         return true;
     }
@@ -71,7 +70,6 @@ bool parseCommands(string input)
     }
 
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()([RCL].+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()(.+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
     {
 
         float tstep = stof(match[6].str());
@@ -81,7 +79,6 @@ bool parseCommands(string input)
         string word;
         while (ss>>word){
             if (regex_match(word, match, regex("(I\\()([RCL].+?)(\\))"))){
-            //if (regex_match(word, match, regex("(I\\()(.+?)(\\))"))){
                 transCurrent(tstart, tstop, tstep, match[2].str());
             }
             if (regex_match(word, match, regex("(V\\()(.+?)(\\))"))){
@@ -91,8 +88,6 @@ bool parseCommands(string input)
         return true;
     }
 
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(n\\d{3})(\\))(\\s*)")))
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
     {
         float tstep = stof(match[6].str());
@@ -103,9 +98,7 @@ bool parseCommands(string input)
         return true;
     }
 
-
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\()([RCL].+?)(\\))(\\s*)")))
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\()(.+?)(\\))(\\s*)")))
     {
         float tstep = stof(match[6].str());
         float tstop = stof(match[8].str());
@@ -115,10 +108,8 @@ bool parseCommands(string input)
         return true;
     }
 
-    
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()([RCL].+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
     {
-        cout << "+++" << endl;
         return true;
     }
    
@@ -132,20 +123,19 @@ bool parseCommands(string input)
         return true;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
-    {
-        Schematic::showAll();
-        return true;
-    }
+    // if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
+    // {
+    //     Schematic::showAll();
+    //     return true;
+    // }
 
-    if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)(\\S+\\.txt)(\\s*)")))
-    {
-        //auto address;
-        string address;
-        string name;
-        Schematic* s = new Schematic(name, address);
-        return true;
-    }
+    // if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)(\\S+\\.txt)(\\s*)")))
+    // {
+    //     string address;
+    //     string name;
+    //     Schematic* s = new Schematic(name, address);
+    //     return true;
+    // }
 
     if(args.size() == 1)
     {
