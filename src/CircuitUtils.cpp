@@ -305,7 +305,7 @@ void transVoltage(float tstart, float tstop, float tstep, string node){
     }
 }
 
-pair<complex<float>, complex<float>> calNodeVoltageComplex(float freq, vector<Node*> nodes, Source* source, float tstart, float tstop, float tstep){
+complex<float> calNodeVoltageComplex(float freq, vector<Node*> nodes, Source* source, float tstart, float tstop, float tstep){
     Element::calComplexValues(freq);
     int n = Node::setIndices();
     int m = VoltageSource::voltageSources.size();
@@ -410,10 +410,10 @@ pair<complex<float>, complex<float>> calNodeVoltageComplex(float freq, vector<No
         x[i] = sum / a[i][i];
     }
 
-    return {x[nodes[0]->getIndex()], x[nodes[0]->getIndex()]};
+    return (x[nodes[0]->getIndex()] - x[nodes[1]->getIndex()]);
 }
 
-pair<complex<float>, complex<float>> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float tstop, float tstep){
+complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float tstop, float tstep){
     int Lcnt = Element::calDCValues();
     int n = Node::setIndices();
     int m = VoltageSource::voltageSources.size();
@@ -525,7 +525,7 @@ pair<complex<float>, complex<float>> calNodeVoltageDCComplex(vector<Node*> nodes
             sum -= a[i][j] * x[j];
         x[i] = sum / a[i][i];
     }
-    return {x[nodes[0]->getIndex()], x[nodes[0]->getIndex()]};
+    return (x[nodes[0]->getIndex()] - x[nodes[1]->getIndex()]);
 }
 
 void transCurrent(float tstart, float tstop, float tstep, string element){
@@ -544,11 +544,26 @@ void transCurrent(float tstart, float tstop, float tstep, string element){
     nodes.push_back(p.second);
     complex<float> deltaV;
     for (auto s : Source::sources){
-        pair<complex<float>, complex<float>> V12 = calNodeVoltageComplex(s->getFreq(), nodes, s, tstart, tstop, tstep);
-        
+        deltaV = calNodeVoltageComplex(s->getFreq(), nodes, s, tstart, tstop, tstep);
+        //*
+        Element::calComplexValues(s->getFreq());
+        //cout << deltaV << endl;
+        deltaV /= e->getComplexValue();
+        //cout << deltaV << endl;
 
+        fill(ans, 0, deltaV, s->getFreq(), tstart, tstop, tstep);
     }
-    pair<complex<float>, complex<float>> V12 = calNodeVoltageDCComplex(nodes, tstart, tstop, tstep);
+    deltaV = calNodeVoltageDCComplex(nodes, tstart, tstop, tstep);
+    if (e->getType() == "capacitor"){
+        deltaV = 0;
+    }else if (e->getType() == "resostor"){
+        deltaV /= e->getComplexValue();
+    }else if (e->getType() == "inductor"){
+        deltaV = 0;
+        // to be calculated
+    }
+
+    fill(ans, 0, deltaV, 0, tstart, tstop, tstep);
 
     cout << "Analysis Result for I(" << element << "):\n";
     cout << setw(10) << "Time" << setw(10) << "Current" << "\n";

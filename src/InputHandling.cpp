@@ -70,6 +70,27 @@ bool parseCommands(string input)
         return true;
     }
 
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()([RCL].+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()(.+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
+    {
+
+        float tstep = stof(match[6].str());
+        float tstop = stof(match[8].str());
+        float tstart = stof(match[10].str());
+        stringstream ss(match[12].str());
+        string word;
+        while (ss>>word){
+            if (regex_match(word, match, regex("(I\\()([RCL].+?)(\\))"))){
+            //if (regex_match(word, match, regex("(I\\()(.+?)(\\))"))){
+                transCurrent(tstart, tstop, tstep, match[2].str());
+            }
+            if (regex_match(word, match, regex("(V\\()(.+?)(\\))"))){
+                transVoltage(tstart, tstop, tstep, match[2].str());
+            }
+        }
+        return true;
+    }
+
     //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
     //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(n\\d{3})(\\))(\\s*)")))
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
@@ -82,14 +103,9 @@ bool parseCommands(string input)
         return true;
     }
 
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\(n\\d{3}\\))(\\s*)")))
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
-    {
-        return true;
-    }
 
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\()([RCL].+?)(\\))(\\s*)")))
+    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\()(.+?)(\\))(\\s*)")))
     {
         float tstep = stof(match[6].str());
         float tstop = stof(match[8].str());
@@ -99,13 +115,22 @@ bool parseCommands(string input)
         return true;
     }
 
-    //if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCD]\\S+\\))(\\s*)")))
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(.+?)(\\s+)(I\\([RCL]\\S+\\))(\\s*)")))
+    
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()([RCL].+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
+    {
+        cout << "+++" << endl;
+        return true;
+    }
+   
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
     {
         return true;
     }
 
-    //multiple variables
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\([RCL]\\S+\\))(\\s*)")))
+    {
+        return true;
+    }
 
     if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
     {
@@ -132,17 +157,20 @@ bool parseCommands(string input)
     {
         if(args[0] == "delete" && args[1][0] == 'R')
         {
-            Resistor::deleteResistor(args[1].substr(1));
+            //Resistor::deleteResistor(args[1].substr(1));
+            Resistor::deleteResistor(args[1]);
             return true;
         }
         if(args[0] == "delete" && args[1][0] == 'C')
         {
-            Capacitor::deleteCapacitor(args[1].substr(1));
+            //Capacitor::deleteCapacitor(args[1].substr(1));
+            Capacitor::deleteCapacitor(args[1]);
             return true;
         }
         if(args[0] == "delete" && args[1][0] == 'L')
         {
-            Inductor::deleteInductor(args[1].substr(1));
+            //Inductor::deleteInductor(args[1].substr(1));
+            Inductor::deleteInductor(args[1]);
             return true;
         }
         if(args[0] == ".list")
@@ -206,7 +234,8 @@ bool parseCommands(string input)
                 powf(10, stof(args[4].substr(args[4].find('e') + 1)));
             }
             else return true;
-            Resistor::addResistor(args[1].substr(1), args[2], args[3], value);
+            //Resistor::addResistor(args[1].substr(1), args[2], args[3], value);
+            Resistor::addResistor(args[1], args[2], args[3], value);
             return true;
         }
         if(args[0] == "add" && args[1][0] == 'C')
@@ -221,7 +250,8 @@ bool parseCommands(string input)
                 powf(10, stof(args[4].substr(args[4].find('e') + 1)));
             }
             else return true;
-            Capacitor::addCapacitor(args[1].substr(1), args[2], args[3], value);
+            //Capacitor::addCapacitor(args[1].substr(1), args[2], args[3], value);
+            Capacitor::addCapacitor(args[1], args[2], args[3], value);
             return true;
         }
         if(args[0] == "add" && args[1][0] == 'L')
@@ -236,12 +266,14 @@ bool parseCommands(string input)
                 powf(10, stof(args[4].substr(args[4].find('e') + 1)));
             }
             else return true;
-            Inductor::addInductor(args[1].substr(1), args[2], args[3], value);
+            //Inductor::addInductor(args[1].substr(1), args[2], args[3], value);
+            Inductor::addInductor(args[1], args[2], args[3], value);
             return true;
         }
         if(args[0] == "add" && args[1][0] == 'D')
         {
-            Diode::addDiode(args[1].substr(1), args[2], args[3], args[4][0]);
+            //Diode::addDiode(args[1].substr(1), args[2], args[3], args[4][0]);
+            Diode::addDiode(args[1], args[2], args[3], args[4][0]);
             return true;
         }
     }
