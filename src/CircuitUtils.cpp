@@ -143,6 +143,7 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
     int Lcnt = Element::calDCValues();
     int n = Node::setIndices();
     int m = VoltageSource::voltageSources.size();
+    int itr = m + n;
     m += Lcnt;
     float a[n + m][n + m];
     float b[n + m];
@@ -155,7 +156,7 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
         b[i] = 0.0f;
     }
 
-    int itr = m + n;
+    // int itr = m + n;
     for (auto e : Element::elements){
         pair<Node*, Node*> p = e->getNodes();
         int i = p.first->getIndex();
@@ -167,6 +168,7 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
             continue;
         }
         if (r == 0){
+            //cout << "found " << i << ' ' << j << ' ' << itr << endl;
             //inductor -> V(0)
             if (i != -1){
                 a[itr][i] = 1;
@@ -224,6 +226,23 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
             }
         }
     }
+    // cout << c << endl;
+    // cout << a[7][3] << endl;
+    // for (int i = 0; i < n + m; i++){
+    //     for (int j = 0; j < n + m; j++){
+    //         cout << a[i][j] <<' ';
+    //     }
+    //     cout << endl;
+    //     //cout << b[i] << endl;
+    // }
+
+    // cout << "@#@!@!" << endl;    
+    // for (int i = 0; i < n + m; i++){
+    //     for (int j = 0; j < n + m; j++){
+    //         cout << a[i][j] <<' ';
+    //     }
+    //     cout << b[i] << endl;
+    // }
 
     for (int i = 0; i < n + m; i++) {
         int maxRow = i;
@@ -249,6 +268,10 @@ void calNodeVoltageDC(vector<Node*> nodes, vector<vector<float>>& ans, float tst
             sum -= a[i][j] * x[j];
         x[i] = sum / a[i][i];
     }
+
+    // for (int i = 0; i < n + m; i++){
+    //     cout << x[i] << endl;
+    // }
 
     for (int i = 0; i < nodes.size(); i++){
         c = nodes[i]->getIndex();
@@ -276,7 +299,9 @@ void transVoltage(float tstart, float tstop, float tstep, string node){
     for (auto s : Source::sources){
         calNodeVoltage(s->getFreq(), nodes, s, ans, tstart, tstop, tstep);
     }
+    //cout << 'h' << ans[0][2] << endl;
     calNodeVoltageDC(nodes, ans, tstart, tstop, tstep);
+    //cout << 'e' << ans[0][2] << endl;
 
     cout << "Analysis Result for V(" << node << "):\n";
     cout << setw(10) << "Time" << setw(10) << "Voltage" << "\n";
@@ -401,6 +426,7 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
     int Lcnt = Element::calDCValues();
     int n = Node::setIndices();
     int m = VoltageSource::voltageSources.size();
+    int itr = m + n;
     m += Lcnt;
     float a[n + m][n + m];
     float b[n + m];
@@ -413,7 +439,7 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
         b[i] = 0.0f;
     }
 
-    int itr = m + n;
+    //int itr = m + n;
     for (auto e : Element::elements){
         pair<Node*, Node*> p = e->getNodes();
         int i = p.first->getIndex();
@@ -426,6 +452,7 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
         }
         if (r == 0){
             //inductor -> V(0)
+            //cout << "in " << itr << endl;
             if (i != -1){
                 a[itr][i] = 1;
                 a[i][itr] = 1;
