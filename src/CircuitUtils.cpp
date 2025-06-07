@@ -1,14 +1,4 @@
-#include "../include/Exceptions.h"
-#include "../include/Node.h"
-#include "../include/Element.h"
-#include "../include/Resistor.h"
-#include "../include/Capacitor.h"
-#include "../include/Inductor.h"
-#include "../include/Diode.h"
-#include "../include/Schematic.h"
 #include "../include/CircuitUtils.h"
- #include "../include/SchematicManager.h"
-
 #include <bits/stdc++.h>
 using namespace std;
 

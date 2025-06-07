@@ -1,4 +1,3 @@
-#include "../include/Element.h"
 #include "../include/Capacitor.h"
 #include <bits/stdc++.h>
 using namespace std;

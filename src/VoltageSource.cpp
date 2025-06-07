@@ -1,4 +1,3 @@
-#include "../include/Source.h"
 #include "../include/VoltageSource.h"
 #include <bits/stdc++.h>
 using namespace std;

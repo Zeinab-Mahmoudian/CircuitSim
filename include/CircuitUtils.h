@@ -9,7 +9,6 @@
 #include "../include/Inductor.h"
 #include "../include/Diode.h"
 #include "../include/Schematic.h"
-#include "../include/CircuitUtils.h"
 #include "../include/SchematicManager.h"
 #include "../include/Sinusoidal.h"
 #include "../include/Source.h"

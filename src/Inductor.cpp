@@ -1,4 +1,3 @@
-#include "../include/Element.h"
 #include "../include/Inductor.h"
 #include <bits/stdc++.h>
 using namespace std;
