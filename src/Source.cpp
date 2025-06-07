@@ -1,4 +1,5 @@
 #include "../include/Source.h"
+//#define _USE_MATH_DEFINES
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -11,7 +12,9 @@ Source::Source(string name, string node1, string node2, float value, float amp, 
     n2 = Node::getNode(node2);
     this->value = value;
     this->amp = amp;
-    this->freq = freq;
+    //this->freq = freq * 2.0f * static_cast<float>(M_PI);
+    const float PI_F = 3.1415927f;
+    this->freq = freq * 2.0f * PI_F;
 }
 
 
