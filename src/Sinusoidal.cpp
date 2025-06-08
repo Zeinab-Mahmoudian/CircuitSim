@@ -24,6 +24,7 @@ vector<float> Sinusoidal::value(float tstart, float tstop, float tstep){
 }
 
 void fill(vector<vector<float>> &ans, int i, complex<float> x, float freq, float tstart, float tstop, float tstep){
+    cout << x << endl;
     float amp = abs(x);
     float phase = atan2(x.imag(), x.real());
     Sinusoidal* s = new Sinusoidal(amp, freq, phase, 0);
@@ -34,6 +35,7 @@ void fill(vector<vector<float>> &ans, int i, complex<float> x, float freq, float
 }
 
 void fillDC(vector<vector<float>> &ans, int i, float x){
+    cout << x << endl;
     for (int j = 0; j < ans[i].size(); j++){
         ans[i][j] += x;
     }
