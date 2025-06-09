@@ -687,9 +687,49 @@ bool calNodeVoltageDCS(vector<float> &v, Source* source, Node* node, float start
     const float EPSILON = 1e-6;
     for (int i = 0; i < n + m; ++i) {
         float pivot = aug[i][i];
+        // if (fabs(pivot) < EPSILON) {
+        //     return false;
+        // }
+
+
+    //     if (fabs(pivot) < EPSILON) {
+    //     bool swapped = false;
+    //     for (int k = i + 1; k < n + m; ++k) {
+    //         if (fabs(aug[k][i]) > EPSILON) {
+    //             for (int j = 0; j < 2 * (n + m); ++j) {
+    //                 swap(aug[i][j], aug[k][j]);
+    //             }
+    //             swapped = true;
+    //             break;
+    //         }
+    //     }
+    //     if (!swapped) {
+    //         return false;
+    //     }
+    //     pivot = aug[i][i]; 
+    // }
+
+
         if (fabs(pivot) < EPSILON) {
-            return false;
+            bool swapped = false;
+            for (int k = i + 1; k < n + m; ++k) {
+                if (fabs(aug[k][i]) > EPSILON) {
+                    for (int j = 0; j < 2 * (n + m); ++j) {
+                        float temp = aug[i][j];
+                        aug[i][j] = aug[k][j];
+                        aug[k][j] = temp;
+                    }
+                    swapped = true;
+                    pivot = aug[i][i];  
+                    break;
+                }
+            }
+            if (!swapped) {
+                return false; 
+            }
         }
+
+
         for (int j = 0; j < 2 * (n + m); ++j)
             aug[i][j] /= pivot;
         for (int k = 0; k < n + m; ++k) {
