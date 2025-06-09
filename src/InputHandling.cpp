@@ -71,7 +71,6 @@ bool parseCommands(string input)
 
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(TRAN)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()([RCL].+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
     {
-
         float tstep = stof(match[6].str());
         float tstop = stof(match[8].str());
         float tstart = stof(match[10].str());
@@ -110,16 +109,42 @@ bool parseCommands(string input)
 
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)((((I\\()([RCL].+?)(\\))(\\s*?))|((V\\()(.+?)(\\)(\\s*)))){2,})(\\s*)")))
     {
+        string source = match[6].str();
+        float start = stof(match[8].str());
+        float end = stof(match[10].str());
+        float increment = stof(match[12].str());
+        stringstream ss(match[14].str());
+        string word;
+        while (ss>>word){
+            if (regex_match(word, match, regex("(I\\()([RCL].+?)(\\))"))){
+                DCCurrent(source, start, end, increment, match[2].str());
+            }
+            if (regex_match(word, match, regex("(V\\()(.+?)(\\))"))){
+                DCVoltage(source, start, end, increment, match[2].str());
+            }
+        }
         return true;
     }
    
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(V\\()(.+?)(\\))(\\s*)")))
     {
+        string source = match[6].str();
+        float start = stof(match[8].str());
+        float end = stof(match[10].str());
+        float increment = stof(match[12].str());
+        string node = match[15].str();
+        DCVoltage(source, start, end, increment, node);
         return true;
     }
 
     if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\([RCL]\\S+\\))(\\s*)")))
     {
+        string source = match[6].str();
+        float start = stof(match[8].str());
+        float end = stof(match[10].str());
+        float increment = stof(match[12].str());
+        string element = match[15].str();
+        DCCurrent(source, start, end, increment, element);
         return true;
     }
 

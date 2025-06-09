@@ -179,5 +179,17 @@ public:
     }
 };
 
+class SourceNotExistNameException : public exception {
+private:
+    string name; 
+    mutable string message; 
+public:
+    explicit SourceNotExistNameException(const string& name) : name(name) {}
+    
+    const char* what() const noexcept override {
+        message = "ERROR: Source " + name + " does not exist in the circuit";
+        return message.c_str();
+    }
+};
 
 #endif

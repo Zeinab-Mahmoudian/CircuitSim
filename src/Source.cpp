@@ -31,3 +31,12 @@ void Source::calComplexValues(float freq)
 
 }
 
+Source* Source::findSource(string name){
+    for (Source* s : sources){
+        if (s->name == name){
+            return s;
+        }
+    }
+    return nullptr;
+}
+

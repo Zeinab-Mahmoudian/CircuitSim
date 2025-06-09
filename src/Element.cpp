@@ -41,7 +41,7 @@ void Element::calComplexValues(float freq)
         }
         else if (e->getType() == "capacitor"){
             r = 0;
-            i = (-1) * (e->value) * freq;
+            i = (-1) /((e->value) * freq);
         }
         else if (e->getType() == "inductor"){
             r = 0;

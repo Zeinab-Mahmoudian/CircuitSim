@@ -28,6 +28,9 @@ class Source
     static void printAll();
 
     static void calComplexValues(float freq);
+    static Source* findSource(string name);
+
 };
+
 
 #endif 

@@ -462,7 +462,7 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
                 a[i][j] -= g;
                 a[j][i] -= g;
             }
-    }
+        }
     }
     int c = n;
     for (auto s : Source::sources){
@@ -498,12 +498,12 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
 
     for (int i = 0; i < n + m; i++) {
         int maxRow = i;
-        for (int k = i + 1; k < n; ++k) {
+        for (int k = i + 1; k < n + m; ++k) {
             if (abs(a[k][i]) > abs(a[maxRow][i])) {
                 maxRow = k;
             }
         }
-        for (int j = 0; j < n; ++j) {
+        for (int j = 0; j < n + m; ++j) {
             swap(a[i][j], a[maxRow][j]);
         }
         swap(b[i], b[maxRow]); 
@@ -547,7 +547,8 @@ void transCurrent(float tstart, float tstop, float tstep, string element){
     deltaV = calNodeVoltageDCComplex(nodes, tstart, tstop, tstep);
     if (e->getType() == "capacitor"){
         deltaV = 0;
-    }else if (e->getType() == "resostor"){
+    }else if (e->getType() == "resistor"){
+        //cout << deltaV << endl;
         deltaV /= e->getComplexValue();
     }else if (e->getType() == "inductor"){
         deltaV = 0;
@@ -567,4 +568,37 @@ void transCurrent(float tstart, float tstop, float tstep, string element){
         cout << setw(10) << time << setw(10) << ans[0][c++] << "\n";
         time += tstep;
     }
+}
+
+void DCfill();
+
+void DCVoltage(string source, float start, float end, float increment, string node){
+    Node* n = Node::findNode(node);
+    Source* s = Source::findSource(source);
+    if (n == nullptr){
+        throw NodeNotExistNameException(node);
+        return;
+    }
+    if (s == nullptr){
+        throw SourceNotExistNameException(source);
+        return;
+    }
+    int steps = static_cast<int>(round((end - start) / increment));
+    steps++;
+    float value = start;
+    //vector<float> v(steps, 0.0f);
+    vector<float> v;
+    cout << "DC Sweep of " << source << ", Result for V(" << node << "):\n";
+    float res;
+    while (value <= end){
+        res = 0;
+        v.push_back(res);
+        cout << res << ' ';
+        value += increment;
+    }
+    cout << endl;
+}
+
+void DCCurrent(string source, float start, float end, float increment, string element){
+
 }
