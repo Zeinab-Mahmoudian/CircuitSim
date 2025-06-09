@@ -29,6 +29,9 @@ complex<float> calNodeVoltageDCComplex(vector<Node*> nodes, float tstart, float 
 void transVoltage(float tstart, float tstop, float tstep, string node);
 void transCurrent(float tstart, float tstop, float tstep, string element);
 
+bool calNodeVoltageDCS(vector<float> &ans, Source* source, Node* node, float start, float end, float increment);
+//void calNodeVoltageDCS(vector<float> &ans, Source* s, string node, float start, float end, float increment);
+
 void DCVoltage(string source, float start, float end, float increment, string node);
 void DCCurrent(string source, float start, float end, float increment, string element);
 

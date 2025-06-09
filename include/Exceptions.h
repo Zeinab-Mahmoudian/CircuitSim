@@ -192,4 +192,17 @@ public:
     }
 };
 
+class ElementNotExistNameException : public exception {
+private:
+    string name; 
+    mutable string message; 
+public:
+    explicit ElementNotExistNameException(const string& name) : name(name) {}
+    
+    const char* what() const noexcept override {
+        message = "ERROR: Element " + name + " does not exist in the circuit";
+        return message.c_str();
+    }
+};
+
 #endif

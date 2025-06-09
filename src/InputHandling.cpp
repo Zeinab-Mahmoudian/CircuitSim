@@ -137,7 +137,7 @@ bool parseCommands(string input)
         return true;
     }
 
-    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\([RCL]\\S+\\))(\\s*)")))
+    if(regex_match(input, match, regex("(\\s*)(\\.print)(\\s+)(DC)(\\s+)(\\S+)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(\\-*\\d+\\.*\\d*)(\\s+)(I\\()([RCL]\\S+?)(\\))(\\s*)")))
     {
         string source = match[6].str();
         float start = stof(match[8].str());
