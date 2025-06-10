@@ -148,19 +148,19 @@ bool parseCommands(string input)
         return true;
     }
 
-    // if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
-    // {
-    //     Schematic::showAll();
-    //     return true;
-    // }
+    if(regex_match(input, match, regex("(\\s*)(-show)(\\s+)(existing)(\\s+)(schematics)(\\s*)")))
+    {
+        Schematic::showAll();
+        return true;
+    }
 
-    // if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)(\\S+\\.txt)(\\s*)")))
-    // {
-    //     string address;
-    //     string name;
-    //     Schematic* s = new Schematic(name, address);
-    //     return true;
-    // }
+    if(regex_match(input, match, regex("(\\s*)(NewFile)(\\s+)(\\S+\\.txt)(\\s*)")))
+    {
+        string address = match[4];
+        string name;
+        Schematic* s = new Schematic(name, address);
+        return true;
+    }
 
     if(args.size() == 1)
     {

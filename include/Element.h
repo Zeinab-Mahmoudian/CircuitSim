@@ -29,6 +29,7 @@ class Element
     
     static vector<Element*> elements;
     static void printAll();
+    static void printAll2(string type);
 
     static void calComplexValues(float freq);
     static int calDCValues();

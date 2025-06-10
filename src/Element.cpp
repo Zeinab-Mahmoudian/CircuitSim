@@ -31,6 +31,16 @@ void Element::printAll()
     }
 }
 
+void Element::printAll2(string type)
+{
+    cout << "All " << type << "s:" << endl;
+    for(auto e: elements)
+    {
+        if (e->getType() == type)
+            cout << e->getName() << endl;
+    }
+}
+
 void Element::calComplexValues(float freq)
 {
     float r, i;
